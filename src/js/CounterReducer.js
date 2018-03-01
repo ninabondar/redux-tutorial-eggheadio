@@ -51,4 +51,4 @@ expect(counter(1, {type: 'SOMETHING_ELSE'})
 expect(counter(undefined, {})
 ).toEqual(0);
 
-console.log('passed');
+console.log('passed ');
