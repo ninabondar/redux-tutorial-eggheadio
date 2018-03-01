@@ -57,9 +57,6 @@ const render = ()=>{
 store.subscribe(render);
 render();
 
-document.addEventListener('click', ()=>{store.dispatch({type: 'INCREMENT'})
-});
-
 expect(counter(0, {type: 'INCREMENT'})
 ).toEqual(1);
 
