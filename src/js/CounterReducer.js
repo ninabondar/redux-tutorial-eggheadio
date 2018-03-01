@@ -15,7 +15,6 @@ const counter = (state = 0, action) => {
 };
 
 const store = createStore(counter);
-
 const render = ()=>{
     document.body.innerText = store.getState();
 };
