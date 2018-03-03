@@ -64,7 +64,9 @@ const removeCounter = (list, ind)=>{
 };
 
 const incrementCounter = (list, ind) => {
-    return [...list.slice(ind), list[ind]+1, ...list.slice(ind+1)]  //first slice before te mutable elem, then
+    return [...list.slice(0, ind),
+        list[ind]+1,
+        ...list.slice(ind+1)]  //first slice before the mutable elem, then
     // change the wanted elem, then add the slice of everything after this elem
 };
 
