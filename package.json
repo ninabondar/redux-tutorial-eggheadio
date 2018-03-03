@@ -2,7 +2,7 @@
   "name": "redux-tutorial",
   "version": "1.0.0",
   "description": "",
-  "main": "CounterReducer.js",
+  "main": "ToDo.js",
   "scripts": {
     "dev": "webpack --watch --progress",
     "start": "npm run dev",

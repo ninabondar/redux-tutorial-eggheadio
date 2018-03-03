@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-    entry: ["./src/js/CounterReducer.js"],
+    entry: ["./src/js/ToDo.js"],
     output: {
         path: path.resolve(__dirname, "build"),
         filename: "bundle.js"
