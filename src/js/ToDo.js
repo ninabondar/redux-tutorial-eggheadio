@@ -1,13 +1,6 @@
 import deepFreeze from 'deep-freeze';
 import expect from 'expect';
 
-const toggleToDo = (todoItem) => {
-    return {                          //idk why {...todoItem} syntax doesn't work
-        id: todoItem.id,
-        text: todoItem.text,
-        completed: !todoItem.completed
-    };
-};
 //reducer for todoList: a pure func that describes logics of changing the state( === changing todos) of this app
 const todos = (state = [], action) => {
   switch (action.type){
@@ -18,6 +11,17 @@ const todos = (state = [], action) => {
               completed: false
               }
           ];
+      case "TOGGLE_TODO":
+          return state.map(todo => {
+             if(todo.id !== action.id){
+                 return todo;
+             }
+             return {
+                 id: todo.id,
+                 text: todo.text,
+                 completed: !todo.completed
+             }
+          });
       default:
           return state;
   }
@@ -49,20 +53,38 @@ const testAddTodo = () => {
 testAddTodo();
 
 const testToggleToDo = () => {
-    let todoBefore = {
-        id: 0,
-        text: 'Eat a carrot',
-        completed: false
+    const stateBefore = [
+        {
+            id: 0,
+            text: 'Learn Redux',
+            completed: false
+        },
+        {
+            id: 1,
+            text: 'Go shopping',
+            completed: false
+        }
+    ];
+    const action = {
+        type: "TOGGLE_TODO",
+        id: 1
     };
+    deepFreeze(stateBefore);
+    deepFreeze(action);
 
-    let todoAfter = {
-        id: 0,
-        text: 'Eat a carrot',
-        completed: true
-    };
-
-    deepFreeze(todoBefore);  //because state obj is immutable in Redux
-    expect(toggleToDo(todoBefore)).toEqual(todoAfter);
+    const stateAfter = [
+        {
+            id: 0,
+            text: 'Learn Redux',
+            completed: false
+        },
+        {
+            id: 1,
+            text: 'Go shopping',
+            completed: true
+        }
+    ];
+    expect(todos(stateBefore, action)).toEqual(stateAfter);
     console.log('passed testToggleToDo')
 };
 
