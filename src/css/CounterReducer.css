@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body{
+    margin-top: 3%;
+    margin-left: 6%;
+    font-family: 'Roboto', sans-serif;
+}
+
+.counter-container{
+    display: flex;
+}
+
+.decrement-button, .increment-button {
+    background-color: #9cc6ba;
+    border: none;
+    margin-left: 40px;
+    margin-right: 40px;
+    width: 40px;
+    height: 40px;
+    margin-top: 20px;
+    color: white;
+}
+
+.decrement-button:hover, .increment-button:hover {
+    background-color: #83a89d;
+}
+
+
+

@@ -1,6 +1,7 @@
 import expect from 'expect';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import  deepFreeze from 'deep-freeze';
 
 const counter = (state = 0, action) => {
     switch (action.type){
@@ -15,20 +16,19 @@ const counter = (state = 0, action) => {
     }
 };
 
-
-
 const Counter = ({value, onIncrement, onDecrement}) =>(
-    <div>
+    <div className="counter-container">
+        <button className="increment-button" onClick={onIncrement}> +
+        </button>
     <h1>
         {value}
     </h1>
-    <button onClick={onIncrement}> +
-    </button>
-    <button onClick={onDecrement}> -
+    <button className="decrement-button" onClick={onDecrement}> -
     </button>
     </div>
 );
-const createStore = (reducer)=>{
+
+const createStore = (reducer) => {
     let state;
     let listeners = [];
 
@@ -54,6 +54,22 @@ const render = ()=>{
                              onDecrement={()=> store.dispatch({type: "DECREMENT"})}/>, document.getElementById('root'));
 };
 
+
+const addCounter = (list)=>{
+    return [...list, 0];  //this new ES6 syntax equals to 'list.concat([0])'
+ };
+
+const removeCounter = (list, ind)=>{
+    return [...list.slice(0, ind), ...list.slice(ind+1)]
+};
+
+const incrementCounter = (list, ind) => {
+    return [...list.slice(ind), list[ind]+1, ...list.slice(ind+1)]  //first slice before te mutable elem, then
+    // change the wanted elem, then add the slice of everything after this elem
+};
+
+
+
 store.subscribe(render);
 render();
 
@@ -76,3 +92,35 @@ expect(counter(undefined, {})
 ).toEqual(0);
 
 console.log('passed ');
+
+//------------------------------------------TESTS--------------------------------------------
+const testAddCounter = () => {
+    let listBefore = [];
+    let listAfter = [0];
+    deepFreeze(listBefore);
+    expect(addCounter(listBefore)).toEqual(listAfter);
+};
+
+const testRemoveCounter = () =>{
+    let listBefore = [0,10,20];
+    let listAfter = [0, 20];
+    deepFreeze(listBefore);
+
+    expect(removeCounter(listBefore, 1)).toEqual(listAfter) ;
+};
+
+const testIncrementCounter = ( ) => {
+    const listBefore = [0,10,20];
+    const listAfter = [0, 11, 20];
+    deepFreeze(listBefore);
+    expect(incrementCounter(listBefore, 1)).toEqual(listAfter);
+};
+
+addCounter([2,3,4]);
+testAddCounter();
+testRemoveCounter();
+testIncrementCounter();
+console.log('passed all tests');
+//----------------------------------------END OF TESTS---------------------------------------
+
+
