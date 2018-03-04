@@ -5,28 +5,38 @@ import expect from 'expect';
 const todos = (state = [], action) => {
   switch (action.type){
       case 'ADD_TODO':
-          return [...state, {
-              id: action.id,
-              text: action.text,
-              completed: false
-              }
+          return [...state, todo(undefined, action)
           ];
       case "TOGGLE_TODO":
-          return state.map(todo => {
-             if(todo.id !== action.id){
-                 return todo;
-             }
-             return {
-                 id: todo.id,
-                 text: todo.text,
-                 completed: !todo.completed
-             }
-          });
+          return state.map(t => todo(t, action));
       default:
           return state;
   }
 };
 
+//logics of updating a todoItem must be saved in another place(function), not right in the reducer:
+
+const todo = (state, action) => {
+    switch(action.type){
+        case "ADD_TODO":
+            return {
+                id: action.id,
+                text: action.text,
+                completed: false
+            };
+        case "TOGGLE_TODO":
+            if(state.id !== action.id){
+                return state;
+            }
+            return {
+                id: state.id,
+                text: state.text,
+                completed: !state.completed
+            };
+        default:
+            return state;
+    }
+};
 //---------------------------------------------TESTS-----------------------------------------------
 
 const testAddTodo = () => {
@@ -37,6 +47,7 @@ const testAddTodo = () => {
       id: 0,
       text: 'Learn Redux'
   };
+
   deepFreeze(action);
   const stateAfter = [
       {
