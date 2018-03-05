@@ -1,6 +1,8 @@
 import deepFreeze from 'deep-freeze';
 import expect from 'expect';
 import Redux from 'redux';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 
 //logics of updating a todoItem must be saved in another place(function), not right in the reducer:
@@ -47,31 +49,50 @@ const visibilityFilter = (state="SHOW_ALL", action) => {
             return state;
     }
 };
-//this is the reducer that will show the todos depending on the visibility filter set
-/*
-const todoApp = (state={}, action) => {
-    return {
-        todos: todos(state.todos, action),
-        visibilityFilter: visibilityFilter(state.visibilityFilter, action)
+
+const {Component} = React;
+let todoId = 0;
+
+class TodoApp extends Component {
+
+    render(){
+        return  (<div>
+            <input ref={node => {
+                this.input = node;
+                }
+            }/>
+            <button
+            onClick={()=> {store.dispatch({
+                type: "ADD_TODO",
+                text:this.input.value,
+                id:todoId++
+                });
+                this.input.value = '';
+            }}>
+                NEW TODO
+            </button>
+
+            <ul>
+                {
+                    this.props.todos.map(todo =>
+                        <li key={todo.id}>
+                            {todo.text}
+                            </li>
+                    )
+                }
+            </ul>
+        </div>)
     }
-};
-*/
 
-const combineReducers = (reducers) => {
-    return (state={}, action) => {
-        return Object.keys(reducers).reduce((nextState, key) =>
-            {
-                nextState[key] = reducers[key](
-                    state[key],
-                    action);
-                return nextState;
-            },
-            {}
-        )
-    };
 };
 
-const { createStore } =  Redux;
+const render = () => {
+    ReactDOM.render(<TodoApp todos={store.getState().todos}/>, document.getElementById('root')
+    );
+};
+store.subscribe(render);
+
+const { combineReducers } = Redux;
 const todoApp = combineReducers(
     {
         visibilityFilter,
@@ -79,6 +100,8 @@ const todoApp = combineReducers(
     }
 );
 
+
+const { createStore } =  Redux;
 const store = createStore(todoApp);
 store.dispatch(
     {
