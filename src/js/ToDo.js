@@ -48,20 +48,45 @@ const visibilityFilter = (state="SHOW_ALL", action) => {
     }
 };
 //this is the reducer that will show the todos depending on the visibility filter set
+/*
 const todoApp = (state={}, action) => {
     return {
         todos: todos(state.todos, action),
         visibilityFilter: visibilityFilter(state.visibilityFilter, action)
     }
 };
+*/
+
+const combineReducers = (reducers) => {
+    return (state={}, action) => {
+        return Object.keys(reducers).reduce((nextState, key) =>
+            {
+                nextState[key] = reducers[key](
+                    state[key],
+                    action);
+                return nextState;
+            },
+            {}
+        )
+    };
+};
 
 const { createStore } =  Redux;
-const store = createStore(todoApp());
-store.dispatch({
+const todoApp = combineReducers(
+    {
+        visibilityFilter,
+        todos
+    }
+);
+
+const store = createStore(todoApp);
+store.dispatch(
+    {
     type: "ADD_TODO",
     id: 0,
     text: "LEARN Redux"
-});
+    }
+);
 
 console.log('current state: ' + store.getState());
 //---------------------------------------------TESTS-----------------------------------------------
