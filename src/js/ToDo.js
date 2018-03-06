@@ -1,11 +1,16 @@
 import deepFreeze from 'deep-freeze';
 import expect from 'expect';
+import { combineReducers } from 'redux';
 import Redux from 'redux';
+import { createStore } from 'redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 
 //logics of updating a todoItem must be saved in another place(function), not right in the reducer:
+
+
+
 const todo = (state, action) => {
     switch(action.type){
         case "ADD_TODO":
@@ -50,13 +55,56 @@ const visibilityFilter = (state="SHOW_ALL", action) => {
     }
 };
 
-const {Component} = React;
-let todoId = 0;
+const todoApp = combineReducers(
+    {
+        visibilityFilter,
+        todos
+    }
+);
 
+const store = createStore(todoApp);
+
+const {Component} = React;
+
+const getVisibleTodos = (todos, filter) => {
+    switch(filter){
+        case "SHOW_ALL":
+            return todos;
+        case "SHOW_ACTIVE":
+            return todos.filter(t=>t.completed);
+        case "SHOW_COMPLETED":
+            return todos.filter(t=> !t.completed);
+    }
+};
+
+const FilterLink = (filter, currentVisibilityFilter, children) => {
+    if
+    (filter === currentVisibilityFilter) {
+        return (
+            <span>{children}</span>
+        )
+    }
+    return (
+        <a href="#"
+           onClick={e => {e.preventDefault();
+               store.dispatch({
+                   type:"SET_VISIBILITY_FILTER",
+                   filter
+               })
+           }}>
+            {children}
+        </a>
+    )
+};
+
+let todoId = 0;
 class TodoApp extends Component {
 
-    render(){
-        return  (<div>
+    render() {
+        const {todos, visibilityFilter} = this.props;
+        const visibleTodos = getVisibleTodos(todos, visibilityFilter);
+            return  (
+               <div>
             <input ref={node => {
                 this.input = node;
                 }
@@ -65,7 +113,7 @@ class TodoApp extends Component {
             onClick={()=> {store.dispatch({
                 type: "ADD_TODO",
                 text:this.input.value,
-                id:todoId++
+                id: todoId++
                 });
                 this.input.value = '';
             }}>
@@ -74,27 +122,35 @@ class TodoApp extends Component {
 
             <ul>
                 {
-                    this.props.todos.map(todo =>
+                    visibleTodos.map(todo =>
                         <li key={todo.id}
                         onClick={()=> {
                             store.dispatch({
                                 type: "TOGGLE_TODO",
                                 id: todo.id
                             });
-                            style={textDecoration:
-                                todo.completed ? "line-through":
-                                    "none"
-                                }
-                            }}>
+                            }}
+                            style={{textDecoration: todo.completed ? 'line-through': 'none'}}>
                             {todo.text}
                             </li>
                     )
                 }
             </ul>
+            <p>Show:
+                {' '}
+                <FilterLink filter="SHOW_ALL"
+                currentFilter={visibilityFilter}>All</FilterLink>
+                {' '}
+                <FilterLink filter="SHOW_ACTIVE"
+                            currentFilter={visibilityFilter}>Active</FilterLink>
+                {' '}
+                <FilterLink filter="SHOW_COMPLETED"
+                            currentFilter={visibilityFilter}>Completed</FilterLink>
+            </p>
         </div>)
     }
 
-};
+}
 
 const render = () => {
     ReactDOM.render(<TodoApp todos={store.getState().todos}/>, document.getElementById('root')
@@ -102,17 +158,6 @@ const render = () => {
 };
 store.subscribe(render);
 
-const { combineReducers } = Redux;
-const todoApp = combineReducers(
-    {
-        visibilityFilter,
-        todos
-    }
-);
-
-
-const { createStore } =  Redux;
-const store = createStore(todoApp);
 store.dispatch(
     {
     type: "ADD_TODO",
