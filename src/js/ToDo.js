@@ -6,14 +6,12 @@ import { createStore } from 'redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-
-
-//logics of updating a todoItem must be saved in another place(function), not right in the reducer:
-
+import {Provider} from 'react-redux';
 
 let todoId = 0;
 let nextTodoId = 0;
 
+//logics of updating a todoItem must be saved in another place(function), not right in the reducer:
 const todo = (state, action) => {
     switch(action.type){
         case "ADD_TODO":
@@ -232,27 +230,14 @@ const TodoApp = () =>
                    <Footer />
         </div>);
 
-//React context ??? wtf
-class Provider extends Component {
-    getChildContext(){
-        return {
-            store: this.props.store
-        }
-    }
-    render(){
-        return this.props.children;
-    }
-}
 //specify the context's type:
 Provider.childContextTypes = {
     store: PropTypes.object
 };
 
-    ReactDOM.render(<Provider store ={createStore(todoApp)}><TodoApp /> </Provider>, document.getElementById('root')
-    );
+ReactDOM.render(<Provider store ={createStore(todoApp)}><TodoApp /> </Provider>, document.getElementById('root'));
 
 store.subscribe(render);
-
 store.dispatch(
     {
     type: "ADD_TODO",
@@ -262,6 +247,7 @@ store.dispatch(
 );
 
 console.log('current state: ' + store.getState());
+
 //---------------------------------------------TESTS-----------------------------------------------
 
 const testAddTodo = () => {
