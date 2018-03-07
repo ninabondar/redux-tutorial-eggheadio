@@ -91,7 +91,7 @@ const TodoList = ({
         </ul>
 );
 
-const AddTodo = (props, {store}) => {
+let AddTodo = ({dispatch}) => {
     let input;
     return (
         <div>
@@ -101,7 +101,7 @@ const AddTodo = (props, {store}) => {
             }/>
             <button
                 onClick={()=> {
-                    store.dispatch({
+                    dispatch({
                         type:"ADD_TODO",
                         id: nextTodoId++,
                         text: input.value
@@ -113,10 +113,7 @@ const AddTodo = (props, {store}) => {
         </div>
     )
 };
-
-AddTodo.contextTypes ={
-    store: PropTypes.object
-};
+AddTodo = connect()(AddTodo);
 
 const getVisibleTodos = (todos, filter) => {
     switch(filter){
@@ -195,14 +192,14 @@ const Footer = () => (
         </p>
     );
 
-const mapStateToProps = (state) => {
+const mapStateToTodoListProps = (state) => {
     return {
         todos: getVisibleTodos(state.todos, state.visibilityFilter),
 
             }
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToTodoListProps = (dispatch) => {
     return {
         onTodoClick: (id) => dispatch({
         type:"TOGGLE_TODO",
@@ -211,7 +208,7 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-VisibleTodoList.connect(mapStateToProps, mapDispatchToProps)(TodoList);
+VisibleTodoList.connect(mapStateToTodoListProps, mapDispatchToTodoListProps)(TodoList);
 
 const TodoApp = () =>
     (
